@@ -24,7 +24,7 @@ export interface Post {
   images?: string[];
   createdAt: Date;
   authorId: string;
-  author: Author;
+  author: UserViewDTO;
   reactions: Reaction[];
   comments: Post[];
 }
@@ -38,12 +38,12 @@ export interface Reaction {
   updatedAt: Date;
   deletedAt?: Date;
 }
-export interface Author {
+export interface UserViewDTO {
   id: string;
   name?: string;
   username: string;
   profilePicture?: string;
-  private: boolean;
+  isPrivate: boolean;
   createdAt: Date;
 }
 
@@ -54,8 +54,8 @@ export interface User {
   profilePicture?: string;
   private: boolean;
   createdAt: Date;
-  followers: Author[];
-  following: Author[];
+  followers: UserViewDTO[];
+  following: UserViewDTO[];
   posts: Post[];
 }
 
@@ -65,11 +65,11 @@ export interface MessageDTO {
   createdAt: Date;
   chatId: string;
   senderId: string;
-  sender: Author;
+  sender: UserViewDTO;
 }
 
 export interface ChatDTO {
   id: string;
-  users: Author[];
+  users: UserViewDTO[];
   messages: MessageDTO[];
 }

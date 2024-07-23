@@ -4,7 +4,7 @@ import { useHttpRequestService } from "../../../../service/HttpRequestService";
 import { useTranslation } from "react-i18next";
 import { User } from "../../../../service";
 import { StyledSuggestionBoxContainer } from "./SuggestionBoxContainer";
-
+var defaultPfp = require('../../../../assets/icon.jpg')
 const SuggestionBox = () => {
   const [users, setUsers] = useState<User[]>([]);
   const httpService = useHttpRequestService();
@@ -35,7 +35,7 @@ const SuggestionBox = () => {
               id={user.id}
               name={user.name}
               username={user.username}
-              profilePicture={user.profilePicture}
+              profilePicture={user.profilePicture? user.profilePicture :defaultPfp}
             />
           ))
       ) : (

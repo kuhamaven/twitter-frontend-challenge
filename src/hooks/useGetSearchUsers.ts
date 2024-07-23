@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Author } from "../service";
+import { UserViewDTO } from "../service";
 import { useHttpRequestService } from "../service/HttpRequestService";
 import { LIMIT } from "../util/Constants";
 
@@ -11,7 +11,7 @@ export const useGetSearchUsers = ({
   query,
   skip,
 }: UseGetRecommendationsProps) => {
-  const [users, setUsers] = useState<Author[]>([]);
+  const [users, setUsers] = useState<UserViewDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasMore, setHasMore] = useState(false);

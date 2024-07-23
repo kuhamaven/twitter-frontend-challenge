@@ -51,9 +51,10 @@ const Tweet = ({post}: TweetProps) => {
   };
 
   const hasReactedByType = (type: string): boolean => {
-    return actualPost.reactions.some(
-        (r) => r.type === type && r.userId === user?.id
-    );
+      return true
+    // return actualPost.reactions.some(
+    //     (r) => r.type === type && r.userId === user?.id
+    // );
   };
 
   return (

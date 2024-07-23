@@ -5,7 +5,7 @@ import UserDataBox from "../user-data-box/UserDataBox";
 import {useTranslation} from "react-i18next";
 import {ButtonType} from "../button/StyledButton";
 import "./FollowUserBox.css";
-import {Author, User} from "../../service";
+import {UserViewDTO, User} from "../../service";
 
 interface FollowUserBoxProps {
   profilePicture?: string;
@@ -28,7 +28,7 @@ const FollowUserBox = ({
   useEffect(() => {
     handleGetUser().then(r => {
       setUser(r)
-      setIsFollowing(r?.following.some((f: Author) => f.id === id))
+      setIsFollowing(r?.following.some((f: UserViewDTO) => f.id === id))
     })
   }, []);
 

@@ -1,13 +1,13 @@
 import React, { ChangeEvent, useState } from "react";
 import SearchResultModal from "./search-result-modal/SearchResultModal";
-import { Author } from "../../service";
+import { UserViewDTO } from "../../service";
 import { useHttpRequestService } from "../../service/HttpRequestService";
 import { useTranslation } from "react-i18next";
 import { StyledSearchBarContainer } from "./SearchBarContainer";
 import { StyledSearchBarInput } from "./SearchBarInput";
 
 export const SearchBar = () => {
-  const [results, setResults] = useState<Author[]>([]);
+  const [results, setResults] = useState<UserViewDTO[]>([]);
   const [query, setQuery] = useState<string>("");
   const service = useHttpRequestService();
   let debounceTimer: NodeJS.Timeout;

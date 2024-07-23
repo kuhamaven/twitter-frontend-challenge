@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useHttpRequestService } from "../service/HttpRequestService";
-import { Author } from "../service";
+import { UserViewDTO } from "../service";
 
 interface UseGetRecommendationsProps {
   page: number;
 }
 
 export const useGetRecommendations = ({ page }: UseGetRecommendationsProps) => {
-  const [users, setUsers] = useState<Author[]>([]);
+  const [users, setUsers] = useState<UserViewDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [hasMore, setHasMore] = useState(true); // Nuevo estado para verificar si hay más elementos
@@ -28,7 +28,7 @@ export const useGetRecommendations = ({ page }: UseGetRecommendationsProps) => {
             setUsers((prev) => {
               const uniqueIds = new Set(prev.map((user) => user.id));
               const filteredUsers = response.filter(
-                (user: Author) => !uniqueIds.has(user.id)
+                (user: UserViewDTO) => !uniqueIds.has(user.id)
               );
               return [...prev, ...filteredUsers];
             });
