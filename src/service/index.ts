@@ -33,8 +33,8 @@ export interface Post {
 }
 
 export enum ReactionType {
-  Like,
-  Retweet
+  Like = "Like",
+  Retweet = "Retweet"
 }
 
 export interface Reaction {

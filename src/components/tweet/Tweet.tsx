@@ -33,16 +33,12 @@ const Tweet = ({post}: TweetProps) => {
     return await service.me()
   }
 
-  const getCountByType = (type: ReactionType): number => {
-    return actualPost?.reactions?.filter((r) => r.reactionType === type).length ?? 0;
-  };
-
   const handleReaction = async (type: ReactionType) => {
     const reacted = actualPost.reactions.find(
         (r) => r.reactionType === type && r.authorId === user?.id
     );
     if (reacted) {
-      await service.deleteReaction(reacted.id);
+      await service.deleteReaction(actualPost.id, type);
     } else {
       await service.createReaction(actualPost.id, type);
     }
