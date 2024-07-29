@@ -27,13 +27,21 @@ export interface Post {
   author: UserViewDTO;
   reactions: Reaction[];
   comments: Post[];
+  qtyComments: number;
+  qtyLikes: number;
+  qtyRetweets: number;
+}
+
+export enum ReactionType {
+  Like,
+  Retweet
 }
 
 export interface Reaction {
   id: string;
-  type: string;
+  reactionType: ReactionType;
   createdAt: Date;
-  userId: string;
+  authorId: string;
   postId: string;
   updatedAt: Date;
   deletedAt?: Date;

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {StyledTweetContainer} from "./TweetContainer";
 import AuthorData from "./user-post-data/AuthorData";
-import type {Post, User} from "../../service";
+import {Post, ReactionType, User} from "../../service";
 import {StyledReactionsContainer} from "./ReactionsContainer";
 import Reaction from "./reaction/Reaction";
 import {useHttpRequestService} from "../../service/HttpRequestService";
@@ -33,13 +33,13 @@ const Tweet = ({post}: TweetProps) => {
     return await service.me()
   }
 
-  const getCountByType = (type: string): number => {
-    return actualPost?.reactions?.filter((r) => r.type === type).length ?? 0;
+  const getCountByType = (type: ReactionType): number => {
+    return actualPost?.reactions?.filter((r) => r.reactionType === type).length ?? 0;
   };
 
-  const handleReaction = async (type: string) => {
+  const handleReaction = async (type: ReactionType) => {
     const reacted = actualPost.reactions.find(
-        (r) => r.type === type && r.userId === user?.id
+        (r) => r.reactionType === type && r.authorId === user?.id
     );
     if (reacted) {
       await service.deleteReaction(reacted.id);
@@ -50,12 +50,10 @@ const Tweet = ({post}: TweetProps) => {
     setActualPost(newPost);
   };
 
-  const hasReactedByType = (type: string): boolean => {
-      //TODO Fix this, as this true is just a band-aid
-      return true
-    // return actualPost.reactions.some(
-    //     (r) => r.type === type && r.userId === user?.id
-    // );
+  const hasReactedByType = (type: ReactionType): boolean => {
+    return actualPost.reactions.some(
+        (r) => r.reactionType === type && r.authorId === user?.id
+    );
   };
 
   return (
@@ -102,7 +100,7 @@ const Tweet = ({post}: TweetProps) => {
         <StyledReactionsContainer>
           <Reaction
               img={IconType.CHAT}
-              count={actualPost?.comments?.length}
+              count={actualPost?.qtyComments}
               reactionFunction={() =>
                   window.innerWidth > 600
                       ? setShowCommentModal(true)
@@ -113,17 +111,17 @@ const Tweet = ({post}: TweetProps) => {
           />
           <Reaction
               img={IconType.RETWEET}
-              count={getCountByType("RETWEET")}
-              reactionFunction={() => handleReaction("RETWEET")}
+              count={actualPost?.qtyRetweets}
+              reactionFunction={() => handleReaction(ReactionType.Retweet)}
               increment={1}
-              reacted={hasReactedByType("RETWEET")}
+              reacted={hasReactedByType(ReactionType.Retweet)}
           />
           <Reaction
               img={IconType.LIKE}
-              count={getCountByType("LIKE")}
-              reactionFunction={() => handleReaction("LIKE")}
+              count={actualPost?.qtyLikes}
+              reactionFunction={() => handleReaction(ReactionType.Like)}
               increment={1}
-              reacted={hasReactedByType("LIKE")}
+              reacted={hasReactedByType(ReactionType.Like)}
           />
         </StyledReactionsContainer>
         <CommentModal

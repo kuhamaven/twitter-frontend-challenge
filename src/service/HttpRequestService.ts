@@ -1,4 +1,4 @@
-import type { PostData, SingInData, SingUpData } from "./index";
+import {PostData, ReactionType, SingInData, SingUpData} from "./index";
 import axios from "axios";
 import { S3Service } from "./S3Service";
 
@@ -108,7 +108,7 @@ const httpRequestService = {
       return res.data;
     }
   },
-  createReaction: async (postId: string, reaction: string) => {
+  createReaction: async (postId: string, reaction: ReactionType) => {
     const res = await axios.post(
       `${url}/reaction/${postId}`,
       { type: reaction },
