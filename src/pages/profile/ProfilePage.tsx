@@ -1,19 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import ProfileInfo from "./ProfileInfo";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../components/modal/Modal";
-import {useTranslation} from "react-i18next";
-import {User} from "../../service";
-import {ButtonType} from "../../components/button/StyledButton";
-import {useHttpRequestService} from "../../service/HttpRequestService";
+import { useTranslation } from "react-i18next";
+import {User, UserViewDTO} from "../../service";
+import { ButtonType } from "../../components/button/StyledButton";
+import { useHttpRequestService } from "../../service/HttpRequestService";
 import Button from "../../components/button/Button";
 import ProfileFeed from "../../components/feed/ProfileFeed";
-import {StyledContainer} from "../../components/common/Container";
-import {StyledH5} from "../../components/common/text";
+import { StyledContainer } from "../../components/common/Container";
+import { StyledH5 } from "../../components/common/text";
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState<User | null>(null);
-  const [following, setFollowing] = useState<boolean>(false);
+  const [profile, setProfile] = useState<[User, boolean] | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [modalValues, setModalValues] = useState({
     text: "",
@@ -21,40 +20,37 @@ const ProfilePage = () => {
     type: ButtonType.DEFAULT,
     buttonText: "",
   });
-  const service = useHttpRequestService()
-  const [user, setUser] = useState<User>()
+  const service = useHttpRequestService();
+  const [user, setUser] = useState<User | null>(null);
 
   const id = useParams().id;
   const navigate = useNavigate();
-
-  const {t} = useTranslation();
-
+  const { t } = useTranslation();
 
   useEffect(() => {
-    handleGetUser().then(r => setUser(r))
+    handleGetUser().then((r) => setUser(r));
   }, []);
 
   const handleGetUser = async () => {
-    return await service.me()
-  }
+    if(id) return await service.getProfile(id);
+  };
 
   const handleButtonType = (): { component: ButtonType; text: string } => {
-    if (profile?.id === user?.id)
-      return {component: ButtonType.DELETE, text: t("buttons.delete")};
-    if (following)
-      return {component: ButtonType.OUTLINED, text: t("buttons.unfollow")};
-    else return {component: ButtonType.FOLLOW, text: t("buttons.follow")};
+    if (profile?.[0].id === user?.id)
+      return { component: ButtonType.DELETE, text: t("buttons.delete") };
+    if (profile?.[1])
+      return { component: ButtonType.OUTLINED, text: t("buttons.unfollow") };
+    else return { component: ButtonType.FOLLOW, text: t("buttons.follow") };
   };
 
   const handleSubmit = () => {
-    if (profile?.id === user?.id) {
+    if (profile?.[0].id === user?.id) {
       service.deleteProfile().then(() => {
         localStorage.removeItem("token");
         navigate("/sign-in");
       });
     } else {
-      service.unfollowUser(profile!.id).then(async () => {
-        setFollowing(false);
+      service.unfollowUser(profile![0].id).then(async () => {
         setShowModal(false);
         await getProfileData();
       });
@@ -62,13 +58,13 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    getProfileData().then();
+    getProfileData();
   }, [id]);
 
   if (!id) return null;
 
   const handleButtonAction = async () => {
-    if (profile?.id === user?.id) {
+    if (profile?.[0].id === user?.id) {
       setShowModal(true);
       setModalValues({
         title: t("modal-title.delete-account"),
@@ -77,44 +73,36 @@ const ProfilePage = () => {
         buttonText: t("buttons.delete"),
       });
     } else {
-      if (following) {
+      if (profile?.[0].followers.some((r) => r.id === user?.id)) {
         setShowModal(true);
         setModalValues({
           text: t("modal-content.unfollow"),
-          title: `${t("modal-title.unfollow")} @${profile?.username}?`,
+          title: `${t("modal-title.unfollow")} @${profile?.[0].username}?`,
           type: ButtonType.FOLLOW,
           buttonText: t("buttons.unfollow"),
         });
       } else {
         await service.followUser(id);
-        service.getProfile(id).then((res) => setProfile(res));
+        await getProfileData();
       }
-      return await getProfileData();
     }
   };
 
   const getProfileData = async () => {
-    service
-        .getProfile(id)
-        .then((res) => {
-          setProfile(res);
-          setFollowing(
-              res
-                  ? res?.followers.some((follower: User) => follower.id === user?.id)
-                  : false
-          );
-        })
-        .catch(() => {
-          service
-              .getProfileView(id)
-              .then((res) => {
-                setProfile(res);
-                setFollowing(false);
-              })
-              .catch((error2) => {
-                console.log(error2);
-              });
-        });
+    try {
+      const profileData : [User, boolean] = await service.getProfile(id);
+      setProfile([
+        profileData[0],
+        profileData[1],
+      ]);
+    } catch {
+      try {
+        const profileViewData = await service.getProfileView(id);
+        setProfile([profileViewData, false]);
+      } catch (error2) {
+        console.log(error2);
+      }
+    }
   };
 
   return (
@@ -122,7 +110,7 @@ const ProfilePage = () => {
         <StyledContainer
             maxHeight={"100vh"}
             borderRight={"1px solid #ebeef0"}
-            maxWidth={'600px'}
+            maxWidth={"600px"}
         >
           {profile && (
               <>
@@ -137,9 +125,9 @@ const ProfilePage = () => {
                       flexDirection={"row"}
                   >
                     <ProfileInfo
-                        name={profile!.name!}
-                        username={profile!.username}
-                        profilePicture={profile!.profilePicture}
+                        name={profile[0].name!}
+                        username={profile[0].username}
+                        profilePicture={profile[0].profilePicture}
                     />
                     <Button
                         buttonType={handleButtonType().component}
@@ -150,8 +138,8 @@ const ProfilePage = () => {
                   </StyledContainer>
                 </StyledContainer>
                 <StyledContainer width={"100%"}>
-                  {profile.followers ? (
-                      <ProfileFeed/>
+                  {profile[0].followers ? (
+                      <ProfileFeed />
                   ) : (
                       <StyledH5>Private account</StyledH5>
                   )}

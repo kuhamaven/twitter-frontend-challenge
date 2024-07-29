@@ -188,7 +188,7 @@ const httpRequestService = {
   },
 
   getProfile: async (id: string) => {
-    const res = await axios.get(`${url}/user/profile/${id}`, {
+    const res = await axios.get(`${url}/user/${id}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
