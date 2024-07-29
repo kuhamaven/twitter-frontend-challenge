@@ -35,6 +35,21 @@ const httpRequestService = {
       return res.data;
     }
   },
+  createComment: async (data: PostData, parentId: string) => {
+    const res = await axios.post(`${url}/post/comment/${parentId}`, data, {
+      headers: {
+        Authorization: localStorage.getItem("token"),
+      },
+    });
+    if (res.status === 201) {
+      const { upload } = S3Service;
+      for (const imageUrl of res.data.images) {
+        const index: number = res.data.images.indexOf(imageUrl);
+        await upload(data.images![index], imageUrl);
+      }
+      return res.data;
+    }
+  },
   getPaginatedPosts: async (limit: number, after: string, query: string) => {
     const res = await axios.get(`${url}/post/${query}`, {
       headers: {
@@ -127,7 +142,7 @@ const httpRequestService = {
         },
       }
     );
-    if (res.status === 201) {
+    if (res.status === 200) {
       return res.data;
     }
   },
