@@ -188,14 +188,12 @@ const httpRequestService = {
   },
 
   getProfile: async (id: string) => {
-    console.log(id)
     const res = await axios.get(`${url}/user/${id}`, {
       headers: {
         Authorization: localStorage.getItem("token"),
       },
     });
     if (res.status === 200) {
-      console.log(res)
       return res.data;
     }
   },

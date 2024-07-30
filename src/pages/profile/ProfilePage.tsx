@@ -36,7 +36,7 @@ const ProfilePage = () => {
   };
 
   const following = ()  =>{
-    return (profile?.[0].followers.some((r) => r.id === user?.id) !== undefined)
+    return (profile?.[0].followers.some((r) => r.id === user?.id))
   }
 
   const handleButtonType = (): { component: ButtonType; text: string } => {
