@@ -35,10 +35,14 @@ const ProfilePage = () => {
     if(id) return await service.getProfile(id);
   };
 
+  const following = ()  =>{
+    return (profile?.[0].followers.some((r) => r.id === user?.id) !== undefined)
+  }
+
   const handleButtonType = (): { component: ButtonType; text: string } => {
     if (profile?.[0].id === user?.id)
       return { component: ButtonType.DELETE, text: t("buttons.delete") };
-    if (profile?.[1])
+    if (following())
       return { component: ButtonType.OUTLINED, text: t("buttons.unfollow") };
     else return { component: ButtonType.FOLLOW, text: t("buttons.follow") };
   };
@@ -73,7 +77,7 @@ const ProfilePage = () => {
         buttonText: t("buttons.delete"),
       });
     } else {
-      if (profile?.[0].followers.some((r) => r.id === user?.id)) {
+      if (following()) {
         setShowModal(true);
         setModalValues({
           text: t("modal-content.unfollow"),
@@ -138,7 +142,7 @@ const ProfilePage = () => {
                   </StyledContainer>
                 </StyledContainer>
                 <StyledContainer width={"100%"}>
-                  {profile[0].followers ? (
+                  {following() ? (
                       <ProfileFeed />
                   ) : (
                       <StyledH5>Private account</StyledH5>

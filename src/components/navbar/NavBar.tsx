@@ -49,11 +49,16 @@ const NavBar = () => {
     setLogoutOpen(!logoutOpen);
   };
 
+  const handleIconClick = () =>
+  {
+      navigate('/');
+  }
+
   return (
       <StyledNavBarContainer>
         <StyledContainer flex={1}>
           <StyledIconContainer>
-            <LogoIcon/>
+            <LogoIcon onClick={handleIconClick}/>
           </StyledIconContainer>
           <StyledNavItemsContainer>
             <NavItem
